@@ -6,8 +6,8 @@
     <router-link to="/page2">Page2</router-link>
     <router-view></router-view>
     <p>現在{{ number }}回clickされています</p>
-    <button v-on:click="countUp"></button>
-    <p v-on:mousemove="mouseLocation">マウスを載せてください</p>
+    <button v-on:click="countUp(2)"></button>
+    <p v-on:mousemove="mouseLocation(3, $event)">マウスを載せてください</p>
     <p>X:{{x}}, Y:{{y}}</p>
     <Footer msg="This is common footer rendered by vue's single file components"></Footer>
   </div>
@@ -35,13 +35,13 @@ export default {
     }
   },
   methods: {
-    countUp: function() {
-      this.number += 1
+    countUp: function(times) {
+      this.number += 1 * times
     },
-    mouseLocation: function(event){
+    mouseLocation: function(divideNumber, event){
       console.log(event);
-      this.x = event.clientX;
-      this.y = event.clientY;
+      this.x = event.clientX / divideNumber;
+      this.y = event.clientY / divideNumber;
     }
   }
 };
