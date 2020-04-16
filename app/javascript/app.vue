@@ -4,6 +4,7 @@
     <div id="nav"></div>
     <router-link to="/">Page1</router-link>|
     <router-link to="/page2">Page2</router-link>
+    <router-link to="/page3">Page3</router-link>
     <router-view></router-view>
     <p>現在{{ number }}回clickされています</p>
     <button @click="countUp(2)"></button>
