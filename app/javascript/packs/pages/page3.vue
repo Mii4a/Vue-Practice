@@ -1,6 +1,6 @@
 <template>
   <div class="footer">
-    <div :style="styleContainer">
+    <div :style="[styleContainer, bgGray]">
       <button @click="ok = !ok">ボタン</button>
       <p v-show="ok">Ok</p>
       <hr />
@@ -50,12 +50,15 @@ export default {
       styleContainer: {
         border: "1px solid #000",
         padding: "20px"
+      },
+      bgGray: {
+        "background-color": "#e0e0e0"
       }
     };
   },
   methods: {
-    remove: function(){
-      this.fruits.shift()
+    remove: function() {
+      this.fruits.shift();
     }
   }
 };
