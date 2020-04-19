@@ -1,5 +1,34 @@
 <template>
   <div id="app">
+    <div class="main">
+      <h1>transition</h1>
+      <button @click="show = !show">切り替え</button>
+      <button @click="myAnimation = 'slide'">Slide</button>
+      <button @click="myAnimation = 'fade'">Fade</button>
+      <h2>{{ myAnimation }}</h2>
+      <transition name="fade" mode="out-in">
+        <p v-if="show" key="bye">さよなら</p>
+        <p v-if="!show" key="hello">こんにちは</p>
+      </transition>
+      <transition enter-active-class="animated bounce" leave-active-class="animated shake">
+        <p v-if="show">Hello</p>
+      </transition>
+      <transition :name="myAnimation" appear>
+        <p v-show="show">bye</p>
+      </transition>
+      <button @click="myComponent = 'ComponentA'"></button>
+      <button @click="myComponent = 'ComponentB'"></button>
+      <transition name="fade" mode="out-in">
+        <component :is="myComponent"></component>
+      </transition>
+
+      <hr />
+      <h1>Javascript transition</h1>
+      <transition @before-enter="beforeEnter" :css="false">
+        <div class="circle" v-if="show"></div>
+      </transition>
+      <h1></h1>
+    </div>
     <Header>
       <template v-slot:totalLike="slotProps">
         <h2>こんにちは</h2>
@@ -94,6 +123,8 @@ import Home from "./packs/components/Home";
 import About from "./packs/components/About";
 import EventTitle from "./packs/components/EventTitle";
 import CalculateNumber from "./packs/components/CalculateNumber";
+import ComponentA from "./packs/components/ComponentA";
+import ComponentB from "./packs/components/ComponentB";
 import Vue from "vue";
 
 export default {
@@ -105,10 +136,15 @@ export default {
     Home,
     About,
     EventTitle,
-    CalculateNumber
+    CalculateNumber,
+    ComponentA,
+    ComponentB
   },
   data: function() {
     return {
+      myComponent: "ComponentA",
+      myAnimation: "slide",
+      show: true,
       currentComponent: "Home",
       title: "title",
       command: "こんにちは",
@@ -162,6 +198,31 @@ export default {
     }
   },
   methods: {
+    beforeEnter(el, done) {
+      // 現れる前
+      done;
+    },
+    enter(el) {
+      // 現れる時
+    },
+    afterEnter(el) {
+      // 現れた後
+    },
+    enterCancelled(el) {
+      // 現れるアニメーションがキャンセルされたとき。
+    },
+    beforeLeave(el) {
+      // 消える前
+    },
+    leave(el) {
+      // 消える時
+    },
+    afterLeave(el) {
+      // 消えた後
+    },
+    leaveCancelled(el) {
+      // 消えるアニメーションがキャンセルされたとき。
+    },
     incrementNumber(value) {
       this.number = value;
     },
@@ -186,6 +247,60 @@ export default {
 </script>
 
 <style scoped>
+.circle {
+  width: 200px;
+  height: 200px;
+  margin: auto;
+  border-radius: 100px;
+  background-color: deeppink;
+}
+.fade-enter {
+  /* 現れるときの最初の状態 */
+  opacity: 0;
+}
+.fade-enter-active {
+  /* 現れるときのtansitionの状態 */
+  transition: opacity 0.5s;
+}
+.fade-enter-to {
+  /* 現れるときの最後の状態 */
+  opacity: 0.5;
+}
+.fade-leave {
+  /* 消えるときの最初の状態 */
+  opacity: 1;
+}
+.fade-leave-active {
+  /* 消えるときのtransitionの状態 */
+  transition: opacity 1s;
+}
+.fade-leave-to {
+  /* 消えるときの最後の状態 */
+  opacity: 0;
+}
+
+.slide-enter,
+.slide-leave-to {
+  opacity: 0;
+}
+.slide-enter-active {
+  animation: slide-in 0.5s;
+  transition: opacity 1s;
+}
+.slide-leave-active {
+  animation: slide-in 0.5s reverse;
+  transition: opacity 1s;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100px);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
 h1 {
   color: red;
 }
@@ -203,5 +318,11 @@ h1 {
 }
 .bg-blue {
   background-color: blue;
+}
+.main {
+  width: 70%;
+  margin: auto;
+  padding-top: 5rem;
+  text-align: center;
 }
 </style>

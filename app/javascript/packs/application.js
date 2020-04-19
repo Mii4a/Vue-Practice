@@ -19,11 +19,6 @@ import TurbolinksAdapter from 'vue-turbolinks';
 Vue.use(Vuex)
 Vue.use(TurbolinksAdapter);
 Vue.config.productionTip = false
-Vue.mixin({
-  created() {
-    console.log('global mixin')
-  }
-})
 
 document.addEventListener('DOMContentLoaded', () => {
   new Vue({
