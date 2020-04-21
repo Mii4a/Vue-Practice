@@ -1,12 +1,20 @@
 <template>
   <div>
     <h1>About</h1>
-    <input />
+    <button @click="toUsers">Usersへ</button>
   </div>
 </template>
 
 <script>
 export default {
+  methods: {
+    toUsers() {
+      this.$router.push({
+        name: "users-id-profile",
+        params: { id: 1 }
+      });
+    }
+  },
   destroyed() {
     console.log("destroyed");
   },

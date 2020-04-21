@@ -1,5 +1,14 @@
 <template>
   <div id="app">
+    <router-link to="/">Page1</router-link>|
+    <router-link to="/page2" active-class="link--active" exact>Page2</router-link>|
+    <router-link to="/page3">Page3</router-link>|
+    <router-link to="/page4">Page4</router-link>|
+    <router-link to="/page5">Page5</router-link>|
+    <router-link to="/users/1">Users</router-link>|
+    <router-link to="/about">About</router-link>
+    <router-view name="header"></router-view>
+    <router-view></router-view>
     <div class="main">
       <h1>transition</h1>
       <button @click="show = !show">切り替え</button>
@@ -24,11 +33,26 @@
 
       <hr />
       <h1>Javascript transition</h1>
-      <transition @before-enter="beforeEnter" :css="false">
+      <transition :css="false" @before-enter="beforeEnter" @enter="enter" @leave="leave">
         <div class="circle" v-if="show"></div>
       </transition>
       <h1></h1>
+
+      <hr />
+      <h1>Transition Group</h1>
+      <button @click="add">追加</button>
+      <ul style="width: 200px; margin: auto;">
+        <transition-group name="fade" tag="div">
+          <li
+            style="cursor: pointer;"
+            v-for="(list, index) in lists"
+            @click="remove(index)"
+            :key="list"
+          >{{ list }}</li>
+        </transition-group>
+      </ul>
     </div>
+
     <Header>
       <template v-slot:totalLike="slotProps">
         <h2>こんにちは</h2>
@@ -85,12 +109,6 @@
     </select>
     <p>{{ eventData.location }}</p>
     <div id="nav"></div>
-    <router-link to="/">Page1</router-link>|
-    <router-link to="/page2">Page2</router-link>|
-    <router-link to="/page3">Page3</router-link>|
-    <router-link to="/page4">Page4</router-link>|
-    <router-link to="/page5">Page5</router-link>|
-    <router-view></router-view>
     <p>現在{{ number }}回clickされています</p>
     <button @click="countUp(2)"></button>
     <p v-on:mousemove="mouseLocation(10, $event)">
@@ -120,7 +138,6 @@ import Header from "./packs/components/header";
 import Footer from "./packs/components/footer";
 import LikeNumber from "./packs/components/LikeNumber";
 import Home from "./packs/components/Home";
-import About from "./packs/components/About";
 import EventTitle from "./packs/components/EventTitle";
 import CalculateNumber from "./packs/components/CalculateNumber";
 import ComponentA from "./packs/components/ComponentA";
@@ -134,7 +151,6 @@ export default {
     Footer,
     LikeNumber,
     Home,
-    About,
     EventTitle,
     CalculateNumber,
     ComponentA,
@@ -142,6 +158,8 @@ export default {
   },
   data: function() {
     return {
+      lists: [0, 1, 2],
+      nextList: 3,
       myComponent: "ComponentA",
       myAnimation: "slide",
       show: true,
@@ -198,30 +216,43 @@ export default {
     }
   },
   methods: {
-    beforeEnter(el, done) {
+    randomIndex() {
+      return Math.floor(Math.random() * this.lists.length);
+    },
+    add() {
+      this.lists.splice(this.randomIndex(), 0, this.nextList);
+      this.nextList += 1;
+    },
+    remove(index) {
+      this.lists.splice(index, 1);
+    },
+    beforeEnter(el) {
       // 現れる前
-      done;
+      el.style.transform = "scale(0)";
     },
-    enter(el) {
+    enter(el, done) {
       // 現れる時
+      let scale = 0;
+      const interval = setInterval(() => {
+        el.style.transform = `scale(${scale})`;
+        scale += 0.1;
+        if (scale > 1) {
+          clearInterval(interval);
+          done();
+        }
+      }, 20);
     },
-    afterEnter(el) {
-      // 現れた後
-    },
-    enterCancelled(el) {
-      // 現れるアニメーションがキャンセルされたとき。
-    },
-    beforeLeave(el) {
-      // 消える前
-    },
-    leave(el) {
+    leave(el, done) {
       // 消える時
-    },
-    afterLeave(el) {
-      // 消えた後
-    },
-    leaveCancelled(el) {
-      // 消えるアニメーションがキャンセルされたとき。
+      let scale = 1;
+      const interval = setInterval(() => {
+        el.style.transform = `scale(${scale})`;
+        scale -= 0.1;
+        if (scale < 0) {
+          clearInterval(interval);
+          done();
+        }
+      }, 20);
     },
     incrementNumber(value) {
       this.number = value;
@@ -254,6 +285,11 @@ export default {
   border-radius: 100px;
   background-color: deeppink;
 }
+
+.fade-move {
+  transition: transform 1s;
+}
+
 .fade-enter {
   /* 現れるときの最初の状態 */
   opacity: 0;
@@ -273,6 +309,8 @@ export default {
 .fade-leave-active {
   /* 消えるときのtransitionの状態 */
   transition: opacity 1s;
+  position: absolute;
+  width: 200px;
 }
 .fade-leave-to {
   /* 消えるときの最後の状態 */
